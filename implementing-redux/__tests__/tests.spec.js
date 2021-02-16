@@ -1,6 +1,6 @@
 import Dedux from '../dedux.js'
 console.log(Dedux)
-const { createStore } = Dedux
+const { createStore, applyMiddleware } = Dedux
 
 /*======================================================
                           TESTS
@@ -78,6 +78,7 @@ describe('dedux', () => {
 
         store.dispatch({ type: 'CALCULATE_MEANING_OF_LIFE' })
 
+        // expect(subscriber).toHaveBeenCalledWith(42)
         expect(subscriber).toHaveBeenCalled()
       })
 
@@ -108,7 +109,7 @@ describe('dedux', () => {
     })
   })
 
-  describe.skip('applyMiddleware', () => {
+  describe('applyMiddleware', () => {
     // Don't start this until you've completed part 2 of the challenge
     it('can apply middleware to dispatched actions', () => {
       const reducer = () => null
@@ -121,9 +122,10 @@ describe('dedux', () => {
         next(action)
       }
 
-      const store = createStore(reducer)
-
-      applyMiddleware(store, [middleWareMocker(spyA), middleWareMocker(spyB)])
+      const store = createStore(
+        reducer,
+        applyMiddleware(middleWareMocker(spyA), middleWareMocker(spyB))
+      )
 
       const action = { type: 'ZAP' }
 

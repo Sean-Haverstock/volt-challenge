@@ -1,21 +1,29 @@
 import Dedux from './dedux.js'
-import { counterReducer, increment, decrement, reset } from './index.js'
+import {
+  counterReducer,
+  increment,
+  decrement,
+  reset,
+  logger,
+  updateStorage,
+} from './index.js'
 
-const { createStore } = Dedux
+const { createStore, applyMiddleware } = Dedux
 
-const store = createStore(counterReducer)
+const store = createStore(
+  counterReducer,
+  applyMiddleware(logger, updateStorage)
+)
 const { dispatch, getState, subscribe } = store
 
-console.log('store', store)
-localStorage.setItem('count', 5)
-const counter = document.getElementById('count')
-counter.innerHTML = getState().count
-
 // grab dom nodes
-const incrementButton = document.getElementById('up')
-const decrementButton = document.getElementById('down')
-const resetButton = document.getElementById('reset')
-const count = document.getElementById('count')
+const ids = ['up', 'down', 'reset', 'count']
+const [incrementButton, decrementButton, resetButton, counter] = ids.map(id => {
+  return document.getElementById(id)
+})
+
+// set counter to current state
+counter.innerHTML = getState().count
 
 // adding event handlers
 incrementButton.addEventListener('click', incrementCount)
@@ -32,12 +40,11 @@ function decrementCount() {
 }
 
 function resetCount() {
-  console.log('in reset count', reset())
   dispatch(reset())
 }
 
+// subscribe counter DOM node to changes (called anytime an action is dispatched)
 subscribe(() => {
   let currentState = getState()
   counter.innerHTML = currentState.count
-  console.log('subscribe', currentState)
 })
