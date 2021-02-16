@@ -12,7 +12,7 @@ const { createStore, applyMiddleware } = Dedux
 
 const store = createStore(
   counterReducer,
-  applyMiddleware(logger, updateStorage)
+  applyMiddleware(updateStorage, logger)
 )
 const { dispatch, getState, subscribe } = store
 

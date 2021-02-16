@@ -47,6 +47,7 @@ function createStore(reducer, enhancer) {
     }
     return unsubscribe
   }
+
   const store = {
     getState,
     dispatch,

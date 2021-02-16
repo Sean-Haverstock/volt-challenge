@@ -1,7 +1,16 @@
 import Dedux from '../dedux.js'
-console.log(Dedux)
 const { createStore, applyMiddleware } = Dedux
 
+function reducer(state = { count: 0 }, action) {
+  switch (action.type) {
+    case 'INCREMENT':
+      return {
+        count: (state.count += 1),
+      }
+    default:
+      return state
+  }
+}
 /*======================================================
                           TESTS
 ======================================================*/
@@ -12,6 +21,52 @@ describe('dedux', () => {
       expect(() => createStore({})).toThrow()
       expect(() => createStore('foo')).toThrow()
       expect(() => createStore(() => ({}))).not.toThrow()
+    })
+
+    it('Dedux store should have getState, dispatch, and subscribe methods', () => {
+      const reducer = jest.fn()
+      const store = createStore(reducer)
+      const methods = Object.keys(store)
+      expect(methods.length).toBe(3)
+      expect(methods).toContain('getState')
+      expect(methods).toContain('dispatch')
+      expect(methods).toContain('subscribe')
+    })
+
+    it('applies the reducer to the previous state', () => {
+      const store = createStore(reducer)
+      console.log('store', store)
+      expect(store.getState()).toEqual({ count: 0 })
+
+      store.dispatch({ type: 'UNKNOWN' })
+      expect(store.getState()).toEqual({ count: 0 })
+
+      store.dispatch({ type: 'INCREMENT' })
+      expect(store.getState()).toEqual({ count: 1 })
+    })
+
+    it('adds multiple listener callbacks to subscriber array', () => {
+      const store = createStore(reducer)
+      const firstListener = jest.fn()
+      const secondListener = jest.fn()
+
+      const unsubscribeFirst = store.subscribe(firstListener)
+      store.dispatch({ type: 'N/A' })
+      expect(firstListener.mock.calls.length).toBe(1)
+
+      store.dispatch({ type: 'N/A' })
+      expect(firstListener.mock.calls.length).toBe(2)
+      expect(secondListener.mock.calls.length).toBe(0)
+
+      store.subscribe(secondListener)
+      store.dispatch({ type: 'N/A' })
+      expect(firstListener.mock.calls.length).toBe(3)
+      expect(secondListener.mock.calls.length).toBe(1)
+
+      unsubscribeFirst()
+      store.dispatch({ type: 'N/A' })
+      expect(firstListener.mock.calls.length).toBe(3)
+      expect(secondListener.mock.calls.length).toBe(2)
     })
   })
 
@@ -78,7 +133,6 @@ describe('dedux', () => {
 
         store.dispatch({ type: 'CALCULATE_MEANING_OF_LIFE' })
 
-        // expect(subscriber).toHaveBeenCalledWith(42)
         expect(subscriber).toHaveBeenCalled()
       })
 
