@@ -34,8 +34,6 @@ function createStore(reducer, enhancer) {
 
     listeners.forEach(listener => {
       listener()
-      // to get original test to pass call each listener with currentState
-      // listener(getState())
     })
     return action
   }
