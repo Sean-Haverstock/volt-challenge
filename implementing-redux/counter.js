@@ -7,7 +7,7 @@ const store = createStore(counterReducer)
 const { dispatch, getState, subscribe } = store
 
 console.log('store', store)
-
+localStorage.setItem('count', 5)
 const counter = document.getElementById('count')
 counter.innerHTML = getState().count
 
@@ -37,7 +37,7 @@ function resetCount() {
 }
 
 subscribe(() => {
-  console.log('subscribe')
   let currentState = getState()
   counter.innerHTML = currentState.count
+  console.log('subscribe', currentState)
 })

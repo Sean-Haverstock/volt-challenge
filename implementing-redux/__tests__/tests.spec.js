@@ -1,5 +1,6 @@
-import Dedux from '../dedux'
-const { createStore, applyMiddleware } = Dedux
+import Dedux from '../dedux.js'
+console.log(Dedux)
+const { createStore } = Dedux
 
 /*======================================================
                           TESTS
@@ -38,7 +39,16 @@ describe('dedux', () => {
 
       it(`dispatch should take any dispatched action and run it 
           through the reducer function to produce a new state.`, () => {
-        const reducer = () => {} // Your reducer function here!
+        const reducer = (state = { foo: 'bar' }, action = {}) => {
+          switch (action.type) {
+            case 'BAZIFY':
+              return {
+                foo: (state.foo = 'baz'),
+              }
+            default:
+              return state
+          }
+        } // Your reducer function here!
 
         const store = createStore(reducer)
 
@@ -68,7 +78,7 @@ describe('dedux', () => {
 
         store.dispatch({ type: 'CALCULATE_MEANING_OF_LIFE' })
 
-        expect(subscriber).toHaveBeenCalledWith(42)
+        expect(subscriber).toHaveBeenCalled()
       })
 
       it(`will return a function that allows you to unsubscribe`, () => {

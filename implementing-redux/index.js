@@ -23,7 +23,7 @@ export function reset() {
 }
 
 const initialState = {
-  count: 0,
+  count: parseInt(localStorage.getItem('count')),
 }
 
 export function counterReducer(state = initialState, action) {
